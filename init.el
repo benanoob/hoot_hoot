@@ -6,7 +6,7 @@
  '(custom-safe-themes
    '("b3ef09ed89ce20cfad8db3271ac5e8ba33901125b386df4476922ca9e6908174" default))
  '(package-selected-packages
-   '(ef-themes vertico doom-modeline command-log-mode use-package)))
+   '(magit ef-themes vertico doom-modeline command-log-mode use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -27,6 +27,9 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
+(global-hl-line-mode 1)
+(column-number-mode 1)
+
 ;; set default font
 (cond
  ((string-equal system-type "windows-nt") ; Microsoft Windows
@@ -42,6 +45,16 @@
 (load-theme 'ef-cherie)
 
 (global-linum-mode t) ;; line number
+
+
+;; UTF-8 as default encoding
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-keyboard-coding-system 'utf-8-unix)
+
+;; do this especially on Windows, else python output problem
+(set-terminal-coding-system 'utf-8-unix)
+
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -66,10 +79,9 @@
 
 (use-package command-log-mode)
 
-
+(use-package magit)
 
 (use-package doom-modeline
-  :ensure t
   :init (doom-modeline-mode 1))
 
 (use-package ef-themes)
@@ -125,3 +137,31 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
+
+;; dired
+
+(use-package dired
+  :ensure nil
+  :custom
+  ;; Always delete and copy recursively
+  (dired-listing-switches "-lah")
+  (dired-recursive-deletes 'always)
+  (dired-recursive-copies 'always)
+  ;; Auto refresh Dired, but be quiet about it
+  (global-auto-revert-non-file-buffers t)
+  (auto-revert-verbose nil)
+  ;; Quickly copy/move file in Dired
+  (dired-dwim-target t)
+  ;; Move files to trash when deleting
+  (delete-by-moving-to-trash t)
+  ;; Load the newest version of a file
+  (load-prefer-newer t)
+  ;; Detect external file changes and auto refresh file
+  (auto-revert-use-notify nil)
+  (auto-revert-interval 3) ; Auto revert every 3 sec
+  :config
+  ;; Enable global auto-revert
+  (global-auto-revert-mode t)
+  ;; Reuse same dired buffer, to prevent numerous buffers while navigating in dired
+  (put 'dired-find-alternate-file 'disabled nil)
+)
